@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:riddle_gemini/pages/riddle_page.dart';
 import 'package:riddle_gemini/util/exercise_tile.dart';
-import 'package:riddle_gemini/util/gradient_floating_action_button.dart';
-import 'package:riddle_gemini/util/sections/exercise_section.dart';
+import 'package:riddle_gemini/util/gradient_button.dart';
+import 'package:riddle_gemini/util/shared_prefs.dart';
 
 import '../util/sections/title_section.dart';
 
@@ -14,6 +14,20 @@ class TopPage extends StatefulWidget {
 }
 
 class _TopPageState extends State<TopPage> {
+  String userName = '';
+
+  Future<void> _loadUserName() async {
+    setState(() {
+      userName = SharedPrefs.fetchUserName() ?? 'no name';
+    });
+    print('=== TOPPAGE: _loadUserName: $userName');// Update the ValueNotifier
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
 
   //
   // Widget _buildHeatMap() {
@@ -26,11 +40,12 @@ class _TopPageState extends State<TopPage> {
   @override
   Widget build(BuildContext context) {
     final ColorScheme theme = Theme.of(context).colorScheme;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
         home: Scaffold(
           backgroundColor: theme.surface,
-          floatingActionButton: GradientFloatingActionButton(
+          floatingActionButton: GradientButton(
             onPressed: () => Navigator.push(
               context, MaterialPageRoute(
                 builder: (context) => RiddlePage()
@@ -42,10 +57,9 @@ class _TopPageState extends State<TopPage> {
             child: Column(
               children: [
                 TitleSection(),
-                ExerciseSection(),
                 ExerciseTile(
                     onTap: () {
-                      
+
                     },
                     iconData: Icons.pets,
                     exerciseName: 'どうぶつクイズ',
@@ -59,4 +73,5 @@ class _TopPageState extends State<TopPage> {
       );
   }
 }
+
 

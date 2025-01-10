@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class GradientFloatingActionButton extends StatelessWidget {
+class GradientButton extends StatelessWidget {
   final VoidCallback onPressed;
   final IconData iconData;
   final String label;
   final List<Color> gradientColors;
 
-  const GradientFloatingActionButton({
+  const GradientButton({
     super.key,
     required this.onPressed,
     required this.iconData,

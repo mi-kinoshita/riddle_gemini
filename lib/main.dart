@@ -1,24 +1,34 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riddle_gemini/pages/home_page.dart';
 import 'package:riddle_gemini/pages/riddle_page.dart';
 import 'package:riddle_gemini/pages/setting_prof_page.dart';
 import 'package:riddle_gemini/pages/top_page.dart';
+import 'package:riddle_gemini/provider/theme_mode_provider.dart';
 import 'package:riddle_gemini/util/shared_prefs.dart';
 import 'package:riddle_gemini/util/theme.dart';
 import 'package:riddle_gemini/util/util.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future main() async {
   await dotenv.load(fileName: ".env");
+  WidgetsFlutterBinding.ensureInitialized();
   SharedPrefs.setPrefsInstance();
-  runApp(const MyApp());
+  runApp(
+      ProviderScope(
+          child: MyApp(),
+      ),
+  );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
+
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final brightness = View.of(context).platformDispatcher.platformBrightness;
 
     // Retrieves the default theme for the platform
@@ -28,11 +38,14 @@ class MyApp extends StatelessWidget {
     TextTheme textTheme = createTextTheme(context, "Roboto", "Roboto");
 
     MaterialTheme theme = MaterialTheme(textTheme);
-     return MaterialApp(
-       title: 'Riddle Gemini',
-       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-       home: const BottomNavigation(),
-     );
+
+    final themeMode = ref.watch(themeModeProvider);
+    return MaterialApp(
+      title: 'Riddle Gemini',
+      theme: brightness == Brightness.light ? theme.light() : theme.dark(),
+      themeMode: themeMode,
+      home: HomePage(),
+    );
   }
 }
 
@@ -44,11 +57,7 @@ class BottomNavigation extends StatefulWidget {
 }
 
 class _BottomNavigationState extends State<BottomNavigation> {
-  static const _screen = [
-    TopPage(),
-    RiddlePage(),
-    SettingProfPage()
-  ];
+  static const _screen = [HomePage(), TopPage(), SettingProfPage()];
 
   int _selectedIndex = 0;
 
@@ -57,13 +66,12 @@ class _BottomNavigationState extends State<BottomNavigation> {
     final ColorScheme theme = Theme.of(context).colorScheme;
     return Scaffold(
       body: _screen[_selectedIndex],
-
       bottomNavigationBar: NavigationBar(
-        onDestinationSelected: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
+          onDestinationSelected: (int index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
           indicatorColor: theme.inversePrimary,
           selectedIndex: _selectedIndex,
           destinations: const <Widget>[

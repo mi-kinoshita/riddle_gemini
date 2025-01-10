@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riddle_gemini/provider/theme_mode_provider.dart';
 import 'package:riddle_gemini/util/shared_prefs.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingProfPage extends StatefulWidget {
   const SettingProfPage({super.key});
@@ -27,6 +28,7 @@ class _SettingProfPageState extends State<SettingProfPage> {
       userName = SharedPrefs.fetchUserName() ?? 'no name';
       _darkMode = SharedPrefs.fetchDarkMode() ?? false;
       selectedLevel = SharedPrefs.fetchDifficultyLevel() ?? 'やさしい'; // Load difficulty level
+      print('====_loadSettings: user $userName ===darkmode $_darkMode');
     });
   }
 
@@ -34,7 +36,7 @@ class _SettingProfPageState extends State<SettingProfPage> {
     await SharedPrefs.setUserName(userName);
     await SharedPrefs.setDarkMode(_darkMode);
     await SharedPrefs.setDifficultyLevel(selectedLevel); // Save difficulty level
-    print('====user $userName ===darkmode $_darkMode');
+    print('====_saveSettings: user $userName ===darkmode $_darkMode');
   }
 
   Future<void> _showMyDialog(BuildContext context) async {
@@ -64,6 +66,7 @@ class _SettingProfPageState extends State<SettingProfPage> {
                   userName = newUsername; // Update selected value
                 });
                 SharedPrefs.setUserName(userName); //
+                print('===TextButton: setUserName $userName');
                 // ここで newUsername を使ってユーザー名を更新する処理を追加
                 Navigator.of(context).pop();
               },

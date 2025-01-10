@@ -5,9 +5,10 @@ class ExerciseSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme theme = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.all(20),
-      color: Colors.white,
+      color: theme.primary,
       child: Column(
         children: [
           Row(
@@ -22,7 +23,10 @@ class ExerciseSection extends StatelessWidget {
               ),
               IconButton(
                   onPressed: () {},
-                  icon: Icon(Icons.more_horiz),
+                  icon: Icon(
+                    Icons.more_horiz,
+                    color: theme.onPrimary,
+                  ),
               ),
             ],
           ),
