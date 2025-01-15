@@ -1,5 +1,9 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:riddle_gemini/model/gemini_model.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:riddle_gemini/pages/answer_page.dart';
 
 class RiddlePage extends StatefulWidget {
@@ -11,6 +15,8 @@ class RiddlePage extends StatefulWidget {
 
 class _RiddlePageState extends State<RiddlePage> {
   final TextEditingController controller = TextEditingController();
+  String hint = "";
+
   bool topRightSelected = false;
   bool bottomRightSelected = false;
   bool topLeftSelected = false;
@@ -28,7 +34,7 @@ class _RiddlePageState extends State<RiddlePage> {
           return AlertDialog(
             title: const Text('ヒント'),
             content: SingleChildScrollView(
-              child: const Text('ここにヒントが表示されます。'),
+              child: Text(hint),
             ),
             actions: <Widget>[
               TextButton(
@@ -78,10 +84,8 @@ class _RiddlePageState extends State<RiddlePage> {
                           SizedBox(
                             width: 8,
                           ),
-                          Text('ここに問題文が表示されます。',
-                          style: TextStyle(fontWeight: FontWeight.bold),),
                           // FutureBuilder<String>(
-                          //   future: geminiModel('こんにちは、Gemini!簡単で短いなぞなぞをひとつ生成してください。'),
+                          //   future: geminiModel('簡単で短いなぞなぞをひとつ生成してください。ヒントはhintに渡してください。'),
                           //   builder: (context, snapshot) {
                           //     if (snapshot.connectionState == ConnectionState.waiting) {
                           //       return CircularProgressIndicator();
@@ -94,6 +98,9 @@ class _RiddlePageState extends State<RiddlePage> {
                           //     }
                           //   },
                           // ),
+                          Text('ここに問題文が表示されます。',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                         ],
                       ),
                     ),

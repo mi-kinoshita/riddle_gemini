@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:riddle_gemini/pages/home_page.dart';
 import 'package:riddle_gemini/pages/riddle_page.dart';
 import 'package:riddle_gemini/pages/setting_prof_page.dart';
@@ -12,8 +16,64 @@ import 'package:riddle_gemini/util/theme.dart';
 import 'package:riddle_gemini/util/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+class Riddle {
+  final String riddleText;
+  final String answerText;
+  final String hintText;
+
+  Riddle(this.riddleText, this.answerText, this.hintText);
+
+  Riddle.fromJson(Map<String, dynamic> json)
+      : riddleText = json['riddleText'] as String,
+        answerText = json['answerText'] as String,
+        hintText = json['hintText'] as String;
+
+  Map<String, dynamic> toJson() => {
+    'riddleText': riddleText,
+    'answerText': answerText,
+    'hintText': hintText,
+  };
+}
+
+Future<void> jsonControlledGeneration() async {
+  final apiKey = dotenv.get('API_KEY');
+  if (apiKey == null) {
+    stderr.writeln(r'No $GEMINI_API_KEY environment variable');
+    exit(1);
+  }
+  // [START json_controlled_generation]
+  // Make sure to include this import:
+  // import 'package:google_generative_ai/google_generative_ai.dart';
+  final schema = Schema.array(
+      description: 'List of riddles',
+      items: Schema.object(properties: {
+        'riddleText':
+        Schema.string(description: 'Text of the riddle.', nullable: false),
+        'answerText':
+        Schema.string(description:  'Text of the answer.', nullable: false),
+        'hintText':
+        Schema.string(description:  'Text of the hint.', nullable: false),
+      }, requiredProperties: [
+        'riddleText',
+        'answerText',
+        'hintText',
+      ]));
+
+  final model = GenerativeModel(
+      model: 'gemini-1.5-pro',
+      apiKey: apiKey,
+      generationConfig: GenerationConfig(
+          responseMimeType: 'application/json', responseSchema: schema));
+
+  final prompt = 'List a few easy riddles.';
+  final response = await model.generateContent([Content.text(prompt)]);
+  print(response.text);
+  // [END json_controlled_generation]
+}
+
 Future main() async {
   await dotenv.load(fileName: ".env");
+  await jsonControlledGeneration();
   WidgetsFlutterBinding.ensureInitialized();
   SharedPrefs.setPrefsInstance();
   runApp(

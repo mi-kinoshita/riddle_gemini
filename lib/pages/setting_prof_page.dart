@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riddle_gemini/provider/theme_mode_provider.dart';
 import 'package:riddle_gemini/util/shared_prefs.dart';
 
 class SettingProfPage extends StatefulWidget {
